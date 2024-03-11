@@ -340,20 +340,55 @@ public class AccountBalance {
         accountBalance.setBalance(carolWallet.getPublicKey("C1"), 10);
         System.out.println("Set Balance C1 to 10");
         accountBalance.print(publicKeyMap);
-        byte[] exampleSignature = new byte[] { 0x01, 0x02, 0x03, 0x04 }; // Replace with your actual signature bytes
+        // byte[] exampleSignature = new byte[] { 0x01, 0x02, 0x03, 0x04 };
+        // Example signature for A1
+        Wallet exampleWalletA1 = SampleWallet.generate(new String[] { "A1" });
+        byte[] exampleMessageA1 = KeyUtils.integer2ByteArray(1);
+        // The next line gives a warning that it is unused
+        // but it can be used for solving Task 3.6
+        byte[] exampleSignatureA1 = exampleWalletA1.signMessage(exampleMessageA1, "A1");
+
+        // Example signature for B1
+        Wallet exampleWalletB1 = SampleWallet.generate(new String[] { "B1" });
+        byte[] exampleMessageB1 = KeyUtils.integer2ByteArray(1);
+        // The next line gives a warning that it is unused
+        // but it can be used for solving Task 3.6
+        byte[] exampleSignatureB1 = exampleWalletB1.signMessage(exampleMessageB1, "B1");
+
+     // Example signature for B2
+        Wallet exampleWalletB2 = SampleWallet.generate(new String[] { "B2" });
+        byte[] exampleMessageB2 = KeyUtils.integer2ByteArray(1);
+        // The next line gives a warning that it is unused
+        // but it can be used for solving Task 3.6
+        byte[] exampleSignatureB2 = exampleWalletB2.signMessage(exampleMessageB2, "B2");
+
+        
+        // Example signature for C1
+        Wallet exampleWalletC1 = SampleWallet.generate(new String[] { "C1" });
+        byte[] exampleMessageC1 = KeyUtils.integer2ByteArray(1);
+        // The next line gives a warning that it is unused
+        // but it can be used for solving Task 3.6
+        byte[] exampleSignatureC1 = exampleWalletC1.signMessage(exampleMessageC1, "C1");
+
+        // Example signature for C2
+        Wallet exampleWalletC2 = SampleWallet.generate(new String[] { "C2" });
+        byte[] exampleMessageC2 = KeyUtils.integer2ByteArray(1);
+        // The next line gives a warning that it is unused
+        // but it can be used for solving Task 3.6
+        byte[] exampleSignatureC2 = exampleWalletC2.signMessage(exampleMessageC2, "C2");
 
         // Step 8: Check whether txil1 giving A1 15 units and B1 5 units can be deducted
         TxInputList txil1 = new TxInputList();
-        txil1.addEntry(aliceWallet.getPublicKey("A1"), 15, exampleSignature);
-        txil1.addEntry(bobWallet.getPublicKey("B1"), 5, exampleSignature);
+        txil1.addEntry(aliceWallet.getPublicKey("A1"), 15, exampleSignatureA1);
+        txil1.addEntry(bobWallet.getPublicKey("B1"), 5, exampleSignatureB1);
         boolean txil1Deductable = accountBalance.checkTxInputListDeductable(txil1);
         System.out.println("Txil1 Deductable: " + txil1Deductable);
 
         // Step 9: Check whether txil2 giving A1 15 units and giving A1 again 15 units
         // can be deducted
         TxInputList txil2 = new TxInputList();
-        txil2.addEntry(aliceWallet.getPublicKey("A1"), 15, exampleSignature);
-        txil2.addEntry(aliceWallet.getPublicKey("A1"), 15, exampleSignature);
+        txil2.addEntry(aliceWallet.getPublicKey("A1"), 15, exampleSignatureA1);
+        txil2.addEntry(aliceWallet.getPublicKey("A1"), 15, exampleSignatureA1);
         boolean txil2Deductable = accountBalance.checkTxInputListDeductable(txil2);
         System.out.println("Txil2 Deductable: " + txil2Deductable);
 
@@ -367,17 +402,13 @@ public class AccountBalance {
         }
 
         // Step 11: Create a TxOutputList corresponding to txil2 and add it to the
-        // AccountBalance
-        if (txil2Deductable) {
-            TxOutputList txol2 = new TxOutputList();
-            txol2.addEntry(aliceWallet.getPublicKey("A1"), 15);
-            txol2.addEntry(aliceWallet.getPublicKey("A1"), 15);
-            accountBalance.addTxOutputList(txol2);
-            System.out.println("Added Txil2 to AccountBalance");
-            accountBalance.print(publicKeyMap);
-        } else {
-            System.out.println("Txil2 cannot be added to AccountBalance");
-        }
+
+        TxOutputList txol2 = new TxOutputList();
+        txol2.addEntry(aliceWallet.getPublicKey("A1"), 15);
+        txol2.addEntry(aliceWallet.getPublicKey("A1"), 15);
+        accountBalance.addTxOutputList(txol2);
+        System.out.println("Added Txil2 to AccountBalance");
+        accountBalance.print(publicKeyMap);
 
         // Step 12: Create a correctly signed input and check if the signature is valid
         PublicKey publicKeyA1 = aliceWallet.getPublicKey("A1");
@@ -391,13 +422,45 @@ public class AccountBalance {
         System.out.println("Correctly Signed Input Signature Valid: " + isValidSignature);
 
         // Step 13: Create a wrongly signed input and check if the signature is valid
+
+        Wallet exampleWallet = SampleWallet.generate(new String[] { "A1" });
+        byte[] exampleMessage = KeyUtils.integer2ByteArray(1);
+        // The next line gives a warning that it is unused
+        // but it can be used for solving Task 3.6
+        byte[] exampleSignature = exampleWallet.signMessage(exampleMessage, "A1");
+
         byte[] wrongSignature = exampleSignature; // Using example signature
         boolean isWrongSignatureValid = Crypto.verifySignature(publicKeyA1,
                 txOutputList.getMessageToSign(publicKeyA1, 30), wrongSignature);
         System.out.println("Wrongly Signed Input Signature Valid: " + isWrongSignatureValid);
 
         // Step 14: Create and process transaction tx1
-        Transaction tx1 = new Transaction(txil1, txOutputList);
+        // Create a transaction tx1 which takes as input for A1 35 units and gives B2
+        // 10,
+        // C2 10, and returns the change (whatever is left) to A2.
+
+        // A1 = 35, B2 = 10 and C2 = 10
+
+        TxInputList trans1 = new TxInputList();
+
+        // trans1.addEntry(aliceWallet.getPublicKey("A1"), 35, exampleSignatureA1);
+        // trans1.addEntry(bobWallet.getPublicKey("B2"), 10, exampleSignatureB1);
+        // trans1.addEntry(carolWallet.getPublicKey("C2"), 10, exampleSignatureC2);
+        boolean trans1Deductable = accountBalance.checkTxInputListDeductable(trans1);
+
+        System.out.println("trans1 Deductable: " + trans1Deductable);
+
+        Transaction tx1 = new Transaction(trans1, txOutputList);
+        //
+        tx1 = new Transaction(
+        		new TxInputList(publicKeyA1, 35, exampleSignatureA1),
+                new TxOutputList(
+                		bobWallet.getPublicKey("B2"), 10, 
+                		carolWallet.getPublicKey("C2"), 10,
+                        aliceWallet.getPublicKey("A2"), 15
+                        )
+                );
+        //
         System.out.println("Signature Approved for Tx1 Input: " + tx1.checkSignaturesValid());
         boolean isTx1Valid = tx1.checkTransactionAmountsValid();
         System.out.println("Tx1 Valid: " + isTx1Valid);
@@ -408,7 +471,21 @@ public class AccountBalance {
         }
 
         // Step 15: Create and process transaction tx2
-        Transaction tx2 = new Transaction(txil2, txOutputList);
+
+        TxInputList trans2 = new TxInputList();
+        Transaction tx2 = new Transaction(trans2, txOutputList);
+        //
+        tx2 = new Transaction(
+        		new TxInputList(
+        				bobWallet.getPublicKey("B2"), 10,exampleSignatureB2,
+        				carolWallet.getPublicKey("C2"), 10,exampleSignatureC2
+        				),
+        		new TxOutputList(
+        				davidWallet.getPublicKey("D1"),15,
+        				carolWallet.getPublicKey("C3"),5
+        				)
+        		);
+        //
         System.out.println("Signature Approved for Tx2 Input: " + tx2.checkSignaturesValid());
         boolean isTx2Valid = tx2.checkTransactionAmountsValid();
         System.out.println("Tx2 Valid: " + isTx2Valid);
