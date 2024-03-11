@@ -1,5 +1,4 @@
 INDEX VERSION 1.134+F:\SWANSEA\cryptoCurrency\crypto\labs\.metadata\.plugins\org.eclipse.jdt.core
 1865797976.index
 933606284.index
-3946796104.index
 2620941534.index

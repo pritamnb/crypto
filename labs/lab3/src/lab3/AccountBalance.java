@@ -7,297 +7,425 @@ import java.security.InvalidKeyException;
 import java.util.Hashtable;
 import java.util.Set;
 import java.util.ArrayList;
+import java.util.HashMap;
 
-
-/** 
- *   AccountBalance defines an accountBalance in the ledger model of bitcoins
+/**
+ * AccountBalance defines an accountBalance in the ledger model of bitcoins
  */
 
 public class AccountBalance {
 
-    /** 
-     * The current accountBalance, with each account's public Key mapped to its 
-     *    account balance.
+    /**
+     * The current accountBalance, with each account's public Key mapped to its
+     * account balance.
      */
-    
+
     private Hashtable<PublicKey, Integer> accountBalanceBase;
 
     /**
-     *  In order to print out the accountBalance in a good order
-     *  we maintain a list of public Keys,
-     *  which will be the set of public keys maped by it in the order
-     *  they were added
+     * In order to print out the accountBalance in a good order
+     * we maintain a list of public Keys,
+     * which will be the set of public keys maped by it in the order
+     * they were added
      **/
 
     private ArrayList<PublicKey> publicKeyList;
 
-
-    /** 
+    /**
      * Creates a new accountBalance
      */
     public AccountBalance() {
-	accountBalanceBase = new Hashtable<PublicKey, Integer>();
-	publicKeyList = new ArrayList<PublicKey>();
-	
+        accountBalanceBase = new Hashtable<PublicKey, Integer>();
+        publicKeyList = new ArrayList<PublicKey>();
+
     }
 
-    /** 
+    /**
      * Creates a new accountBalance from a map from string to integers
      */
-    
+
     public AccountBalance(Hashtable<PublicKey, Integer> accountBalanceBase) {
-	this.accountBalanceBase = accountBalanceBase;
-	publicKeyList = new ArrayList<PublicKey>();	
-	for (PublicKey pbk : accountBalanceBase.keySet()){
-	    publicKeyList.add(pbk);
-	}
+        this.accountBalanceBase = accountBalanceBase;
+        publicKeyList = new ArrayList<PublicKey>();
+        for (PublicKey pbk : accountBalanceBase.keySet()) {
+            publicKeyList.add(pbk);
+        }
     }
 
-    /** obtain the underlying Hashtable from string to integers
-     */   
-    
-    public Hashtable<PublicKey,Integer> getAccountBalanceBase(){
-	return accountBalanceBase;
+    /**
+     * obtain the underlying Hashtable from string to integers
+     */
+
+    public Hashtable<PublicKey, Integer> getAccountBalanceBase() {
+        return accountBalanceBase;
     };
 
-    /** 
-      * obtain the list of publicKeys in the tree map
-      */   
-    
-    public Set<PublicKey> getPublicKeys(){
-	return getAccountBalanceBase().keySet();
+    /**
+     * obtain the list of publicKeys in the tree map
+     */
+
+    public Set<PublicKey> getPublicKeys() {
+        return getAccountBalanceBase().keySet();
     };
 
-    /** 
-      * obtain the list of publicKeys in the order they were added
-      */   
+    /**
+     * obtain the list of publicKeys in the order they were added
+     */
 
-    public ArrayList<PublicKey> getPublicKeysOrdered(){
-	return publicKeyList;
-    };        
+    public ArrayList<PublicKey> getPublicKeysOrdered() {
+        return publicKeyList;
+    };
 
-    
-    
-
-    /** 
-     * Adds a mapping from new account's name {@code publicKey} to its 
-     * account balance {@code balance} into the accountBalance. 
+    /**
+     * Adds a mapping from new account's name {@code publicKey} to its
+     * account balance {@code balance} into the accountBalance.
      *
-     * if there was an entry it is overridden.  
+     * if there was an entry it is overridden.
      */
 
     public void addAccount(PublicKey publicKey, int balance) {
-	accountBalanceBase.put(publicKey, balance);
-	if (! publicKeyList.contains(publicKey)){
-	    publicKeyList.add(publicKey);
-	}
+        accountBalanceBase.put(publicKey, balance);
+        if (!publicKeyList.contains(publicKey)) {
+            publicKeyList.add(publicKey);
+        }
     }
 
-    /** 
+    /**
      * @return true if the {@code publicKey} exists in the accountBalance.
      */
-    
+
     public boolean hasPublicKey(PublicKey publicKey) {
-	return accountBalanceBase.containsKey(publicKey);
+        return accountBalanceBase.containsKey(publicKey);
     }
 
-
-    /** 
+    /**
      * @return the balance for this account {@code account}
      *
-     *  if there was no entry, return zero
+     *         if there was no entry, return zero
      *
      */
-    
+
     public int getBalance(PublicKey publicKey) {
-	if (hasPublicKey(publicKey)){
-		return accountBalanceBase.get(publicKey);
-	    } else
-	    {  return 0;
-	    }
+        if (hasPublicKey(publicKey)) {
+            return accountBalanceBase.get(publicKey);
+        } else {
+            return 0;
+        }
     }
 
-
-    /** 
+    /**
      * set the balance for {@code publicKey} to {@code amount}
      */
 
-    
-    public void setBalance(PublicKey publicKey, int amount){
-	accountBalanceBase.put(publicKey,amount);
-	if (! publicKeyList.contains(publicKey)){
-	    publicKeyList.add(publicKey);
-	}	
-	    };
-	
+    public void setBalance(PublicKey publicKey, int amount) {
+        accountBalanceBase.put(publicKey, amount);
+        if (!publicKeyList.contains(publicKey)) {
+            publicKeyList.add(publicKey);
+        }
+    };
 
-    /** 
+    /**
      * Imcrements Adds amount to balance for {@code publicKey}
      * 
-     *  if there was no entry for {@code publicKey} add one with 
-     *       {@code balance}
+     * if there was no entry for {@code publicKey} add one with
+     * {@code balance}
      */
-    
+
     public void addToBalance(PublicKey publicKey, int amount) {
-	setBalance(publicKey,getBalance(publicKey) + amount);
+        setBalance(publicKey, getBalance(publicKey) + amount);
     }
 
-
-    /** 
+    /**
      * Subtracts amount from balance for {@code publicKey}
      */
-    
+
     public void subtractFromBalance(PublicKey publicKey, int amount) {
-	setBalance(publicKey,getBalance(publicKey) - amount);
+        setBalance(publicKey, getBalance(publicKey) - amount);
     }
 
-
-    /** 
+    /**
      * Check balance has at least amount for {@code publicKey}
      */
     public boolean checkBalance(PublicKey publicKey, int amount) {
-	return (getBalance(publicKey) >= amount);
+        return (getBalance(publicKey) >= amount);
     }
 
-
-    /* Task 3.4 consists of several subtasks
-       This is just a repetition of the tasks done for lab2 adapted to the 
-       current setting
- 
-       Task 3.4.1
-       check whether an accountBalance can be deducted 
-       this is an auxiliary function used to define checkTxInputListDeductable 
+    /*
+     * Task 3.4 consists of several subtasks
+     * This is just a repetition of the tasks done for lab2 adapted to the
+     * current setting
+     * 
+     * Task 3.4.1
+     * check whether an accountBalance can be deducted
+     * this is an auxiliary function used to define checkTxInputListDeductable
      */
 
-    public boolean checkAccountBalanceDeductable(AccountBalance amountToCheckForDeduction){
-	// you need to replace then next line by the correct statement	
-	return true;
+    // public boolean checkAccountBalanceDeductable(AccountBalance
+    // amountToCheckForDeduction){
+    // // you need to replace then next line by the correct statement
+    // return true;
+    // };
+    public boolean checkAccountBalanceDeductable(AccountBalance amountToCheckForDeduction) {
+        // you need to replace then next line by the correct statement
+        for (PublicKey publicKey : amountToCheckForDeduction.getPublicKeys()) {
+            int amountToDeduct = amountToCheckForDeduction.getBalance(publicKey);
+            if (this.getBalance(publicKey) < amountToDeduct) {
+                return false; // Cannot deduct for this user
+            }
+        }
+        return true;
     };
 
-
-    /** 
-     *  Task 3.4.2
+    /**
+     * Task 3.4.2
      *
-     *  Check that a list of publicKey amounts can be deducted from the 
-     *     current accountBalance
+     * Check that a list of publicKey amounts can be deducted from the
+     * current accountBalance
      *
-     *   done by first converting the list of publicKey amounts into an accountBalance
-     *     and then checking that the resulting accountBalance can be deducted.
-     *   
-     */    
+     * done by first converting the list of publicKey amounts into an accountBalance
+     * and then checking that the resulting accountBalance can be deducted.
+     * 
+     */
 
-
-    public boolean checkTxInputListDeductable(TxInputList txInputList){
-	// you need to replace then next line by the correct statement	
-	return true;	
+    public boolean checkTxInputListDeductable(TxInputList txInputList) {
+        AccountBalance txAccountBalance = txInputList.toAccountBalance();
+        return this.checkAccountBalanceDeductable(txAccountBalance);
     };
 
-
-    /** 
+    /**
      * Task 3.4.3
      * Subtract a list of TxInput from the accountBalance
      *
-     *   requires that the list to be deducted is deductable.
-     *   
-     */    
-    
+     * requires that the list to be deducted is deductable.
+     * 
+     */
 
-    public void subtractTxInputList(TxInputList txInputList){
-	// fill in Body 	
+    public void subtractTxInputList(TxInputList txInputList) {
+        AccountBalance txAccountBalance = txInputList.toAccountBalance();
+        for (PublicKey publicKey : txAccountBalance.getPublicKeys()) {
+            int amountToSubtract = txAccountBalance.getBalance(publicKey);
+            this.subtractFromBalance(publicKey, amountToSubtract);
+        }
     }
 
-
-    
-    /** 
+    /**
      * Task 3.4.4
      * Adds a list of txOutput of a transaction to the current accountBalance
      *
-     */    
+     */
 
-    public void addTxOutputList(TxOutputList txOutputList){
-	// fill in Body 	
+    public void addTxOutputList(TxOutputList txOutputList) {
+        AccountBalance txAccountBalance = txOutputList.toAccountBalance();
+        for (PublicKey publicKey : txAccountBalance.getPublicKeys()) {
+            int amountToAdd = txAccountBalance.getBalance(publicKey);
+            this.addToBalance(publicKey, amountToAdd);
+        }
     }
 
-    /** 
+    /**
      * Task 3.4.5
      * Process a transaction
-     *    by first deducting all the inputs
-     *    and then adding all the outputs.
+     * by first deducting all the inputs
+     * and then adding all the outputs.
      *
-     */    
-    
-    public void processTransaction(Transaction tx){
-	// fill in Body 		
+     */
+
+    public void processTransaction(Transaction tx) {
+        this.subtractTxInputList(tx.toTxInputs());
+        this.addTxOutputList(tx.toTxOutputs());
     };
 
-
-    /** 
+    /**
      *
-     *  Task 3.5 Check a transaction is valid.
-     *           Including that Signatures are valid (change to lab 2!!)
+     * Task 3.5 Check a transaction is valid.
+     * Including that Signatures are valid (change to lab 2!!)
      *
-     *  this means that 
-     *    the sum of outputs is less than or equal to the sum of inputs
-     *    all signatures are valid
-     *    and the inputs can be deducted from the accountBalance.
+     * this means that
+     * the sum of outputs is less than or equal to the sum of inputs
+     * all signatures are valid
+     * and the inputs can be deducted from the accountBalance.
+     * 
+     * This method has been set to true so that the code compiles - that should
+     * be changed
+     */
 
-     *    This method has been set to true so that the code compiles - that should
-     *    be changed
-     */    
+    public boolean checkTxValid(Transaction tx) {
+        TxInputList inputList = tx.toTxInputs();
+        TxOutputList outputList = tx.toTxOutputs();
+        return inputList.toSum() >= outputList.toSum() && this.checkTxInputListDeductable(inputList);
 
-    public boolean checkTxValid(Transaction tx){
-	return true;
-	/* this is not the correct value, only used here so that the code
-	   compiles */
     };
 
-
-    
-    /** 
-     * Prints the current state of the accountBalance. 
+    /**
+     * Prints the current state of the accountBalance.
      */
 
     public void print(PublicKeyMap pubKeyMap) {
-	for (PublicKey publicKey : publicKeyList ) {
-	    Integer value = getBalance(publicKey);
-	    System.out.println("The balance for " +
-			       pubKeyMap.getUser(publicKey) + " is " + value); 
-	}
+        for (PublicKey publicKey : publicKeyList) {
+            Integer value = getBalance(publicKey);
+            System.out.println("The balance for " +
+                    pubKeyMap.getUser(publicKey) + " is " + value);
+        }
 
     }
 
-
-
-    /** 
+    /**
      * Testcase
      */
 
+    // public static void test()
+    // throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
+
+    // Wallet exampleWallet = SampleWallet.generate(new String[] { "Alice" });
+    // byte[] exampleMessage = KeyUtils.integer2ByteArray(1);
+    // // The next line gives a warning that it is unused
+    // // but it can be used for solving Task 3.6
+    // byte[] exampleSignature = exampleWallet.signMessage(exampleMessage, "Alice");
+
+    // /***
+    // * Task 3.6
+    // * add to the test case the test as described in the lab sheet
+    // *
+    // * you can use the above exampleSignature, when a sample signature is needed
+    // * which cannot be computed from the data.
+    // *
+    // **/
+
+    // }
+
     public static void test()
-	throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
+            throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
 
-	Wallet exampleWallet = SampleWallet.generate(new String[]{ "Alice"});
-	byte[] exampleMessage = KeyUtils.integer2ByteArray(1);
-	// The next line gives a warning that it is unused
-	//     but it can be used for solving Task 3.6
-	byte[] exampleSignature = exampleWallet.signMessage(exampleMessage,"Alice");
+        // Step 1: Create sample wallets for Alice, Bob, Carol, and David
+        Wallet aliceWallet = SampleWallet.generate(new String[] { "A1", "A2" });
+        Wallet bobWallet = SampleWallet.generate(new String[] { "B1", "B2" });
+        Wallet carolWallet = SampleWallet.generate(new String[] { "C1", "C2", "C3" });
+        Wallet davidWallet = SampleWallet.generate(new String[] { "D1" });
 
+        // Step 2: Compute the PublicKeyMap containing the public keys of all wallets
+        PublicKeyMap publicKeyMap = new PublicKeyMap();
+        publicKeyMap.addPublicKeyMap(aliceWallet.toPublicKeyMap());
+        publicKeyMap.addPublicKeyMap(bobWallet.toPublicKeyMap());
+        publicKeyMap.addPublicKeyMap(carolWallet.toPublicKeyMap());
+        publicKeyMap.addPublicKeyMap(davidWallet.toPublicKeyMap());
 
-	/***   Task 3.6
-               add  to the test case the test as described in the lab sheet
-                
-               you can use the above exampleSignature, when a sample signature is needed
-	       which cannot be computed from the data.
+        // Step 3: Create an empty AccountBalance and add key names initialized with a
+        // balance of 0
+        AccountBalance accountBalance = new AccountBalance();
+        accountBalance.addAccount(aliceWallet.getPublicKey("A1"), 0);
+        accountBalance.addAccount(aliceWallet.getPublicKey("A2"), 0);
+        accountBalance.addAccount(bobWallet.getPublicKey("B1"), 0);
+        accountBalance.addAccount(bobWallet.getPublicKey("B2"), 0);
+        accountBalance.addAccount(carolWallet.getPublicKey("C1"), 0);
+        accountBalance.addAccount(carolWallet.getPublicKey("C2"), 0);
+        accountBalance.addAccount(carolWallet.getPublicKey("C3"), 0);
+        accountBalance.addAccount(davidWallet.getPublicKey("D1"), 0);
 
-	**/
-	
+        // Step 4: Set the balance for A1 to 20
+        accountBalance.setBalance(aliceWallet.getPublicKey("A1"), 20);
+        System.out.println("Set Balance A1 to 20");
+        accountBalance.print(publicKeyMap);
+
+        // Step 5: Add 15 to the balance for B1
+        accountBalance.addToBalance(bobWallet.getPublicKey("B1"), 15);
+        System.out.println("Added 15 to Balance B1");
+        accountBalance.print(publicKeyMap);
+
+        // Step 6: Subtract 5 from the balance for B1
+        accountBalance.subtractFromBalance(bobWallet.getPublicKey("B1"), 5);
+        System.out.println("Subtracted 5 from Balance B1");
+        accountBalance.print(publicKeyMap);
+
+        // Step 7: Set the balance for C1 to 10
+        accountBalance.setBalance(carolWallet.getPublicKey("C1"), 10);
+        System.out.println("Set Balance C1 to 10");
+        accountBalance.print(publicKeyMap);
+        byte[] exampleSignature = new byte[] { 0x01, 0x02, 0x03, 0x04 }; // Replace with your actual signature bytes
+
+        // Step 8: Check whether txil1 giving A1 15 units and B1 5 units can be deducted
+        TxInputList txil1 = new TxInputList();
+        txil1.addEntry(aliceWallet.getPublicKey("A1"), 15, exampleSignature);
+        txil1.addEntry(bobWallet.getPublicKey("B1"), 5, exampleSignature);
+        boolean txil1Deductable = accountBalance.checkTxInputListDeductable(txil1);
+        System.out.println("Txil1 Deductable: " + txil1Deductable);
+
+        // Step 9: Check whether txil2 giving A1 15 units and giving A1 again 15 units
+        // can be deducted
+        TxInputList txil2 = new TxInputList();
+        txil2.addEntry(aliceWallet.getPublicKey("A1"), 15, exampleSignature);
+        txil2.addEntry(aliceWallet.getPublicKey("A1"), 15, exampleSignature);
+        boolean txil2Deductable = accountBalance.checkTxInputListDeductable(txil2);
+        System.out.println("Txil2 Deductable: " + txil2Deductable);
+
+        // Step 10: Deduct txil1 from the AccountBalance
+        if (txil1Deductable) {
+            accountBalance.subtractTxInputList(txil1);
+            System.out.println("Deducted Txil1 from AccountBalance");
+            accountBalance.print(publicKeyMap);
+        } else {
+            System.out.println("Txil1 cannot be deducted from AccountBalance");
+        }
+
+        // Step 11: Create a TxOutputList corresponding to txil2 and add it to the
+        // AccountBalance
+        if (txil2Deductable) {
+            TxOutputList txol2 = new TxOutputList();
+            txol2.addEntry(aliceWallet.getPublicKey("A1"), 15);
+            txol2.addEntry(aliceWallet.getPublicKey("A1"), 15);
+            accountBalance.addTxOutputList(txol2);
+            System.out.println("Added Txil2 to AccountBalance");
+            accountBalance.print(publicKeyMap);
+        } else {
+            System.out.println("Txil2 cannot be added to AccountBalance");
+        }
+
+        // Step 12: Create a correctly signed input and check if the signature is valid
+        PublicKey publicKeyA1 = aliceWallet.getPublicKey("A1");
+        TxOutputList txOutputList = new TxOutputList();
+        txOutputList.addEntry(bobWallet.getPublicKey("B2"), 10);
+        txOutputList.addEntry(carolWallet.getPublicKey("C1"), 20);
+        byte[] signedInput = Crypto.sign(aliceWallet.getPrivateKey("A1"),
+                txOutputList.getMessageToSign(publicKeyA1, 30));
+        boolean isValidSignature = Crypto.verifySignature(publicKeyA1, txOutputList.getMessageToSign(publicKeyA1, 30),
+                signedInput);
+        System.out.println("Correctly Signed Input Signature Valid: " + isValidSignature);
+
+        // Step 13: Create a wrongly signed input and check if the signature is valid
+        byte[] wrongSignature = exampleSignature; // Using example signature
+        boolean isWrongSignatureValid = Crypto.verifySignature(publicKeyA1,
+                txOutputList.getMessageToSign(publicKeyA1, 30), wrongSignature);
+        System.out.println("Wrongly Signed Input Signature Valid: " + isWrongSignatureValid);
+
+        // Step 14: Create and process transaction tx1
+        Transaction tx1 = new Transaction(txil1, txOutputList);
+        System.out.println("Signature Approved for Tx1 Input: " + tx1.checkSignaturesValid());
+        boolean isTx1Valid = tx1.checkTransactionAmountsValid();
+        System.out.println("Tx1 Valid: " + isTx1Valid);
+        if (isTx1Valid) {
+            accountBalance.processTransaction(tx1);
+            System.out.println("Processed Tx1 and Updated AccountBalance");
+            accountBalance.print(publicKeyMap);
+        }
+
+        // Step 15: Create and process transaction tx2
+        Transaction tx2 = new Transaction(txil2, txOutputList);
+        System.out.println("Signature Approved for Tx2 Input: " + tx2.checkSignaturesValid());
+        boolean isTx2Valid = tx2.checkTransactionAmountsValid();
+        System.out.println("Tx2 Valid: " + isTx2Valid);
+        if (isTx2Valid) {
+            accountBalance.processTransaction(tx2);
+            System.out.println("Processed Tx2 and Updated AccountBalance");
+            accountBalance.print(publicKeyMap);
+        }
+
     }
 
-    /** 
+    /**
      * main function running test cases
-     */            
+     */
 
     public static void main(String[] args)
-	throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
-	AccountBalance.test();
+            throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
+        AccountBalance.test();
     }
 }

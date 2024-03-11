@@ -221,6 +221,11 @@ public class TxInputList {
      **/
 
     public boolean checkSignature(TxOutputList txol) {
+        for (TxInput txInput : toList()) {
+            if (!txInput.checkSignature(txol)) {
+                return false;
+            }
+        }
         return true;
         /*
          * this is not the correct value, only used here so that the code
